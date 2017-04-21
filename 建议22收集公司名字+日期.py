@@ -88,6 +88,7 @@ for each_sheet in sheet_list:                          # (3)历遍 工作表 名
 file_name = os.path.splitext(os.path.basename(Path1))[0]
 
 
+#-(3)：【wirte xlsx】
 company_2013 = [['name','Ticker','日期','Business Description']]
 company_2014 = [['name','Ticker','日期','Business Description']]
 company_2015 = [['name','Ticker','日期','Business Description']]
