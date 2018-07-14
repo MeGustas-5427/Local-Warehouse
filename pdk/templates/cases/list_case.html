@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <link type="text/css" rel="stylesheet" href="https://img.pdk365.com/static/lee/css/list_case.css">
+    <script src="https://img.pdk365.com/static/reception/js/list_case.js"></script>
+{% endblock %}
+{% block main %}
+<!--列表内容开始-->
+<div class="container-fluid">
+    <div class="container">
+        <!--路径导航-->
+        <ul class="breadcrumb_new">
+            <li><a href="/">首页</a><i class="fa fa-angle-right"></i></li>
+            <li class="active">赏案例</li>
+        </ul>
+        <div class="case_conent">
+            <!--左侧案例列表页-->
+            <div class="case_conent_left">
+                <ul class="nav nav-tabs">
+                    <li class="case_conent_type"><h3>案例类型：</h3></li>
+                    {% if case_type == "全部" %}
+                        <li class="active">
+                    {% else %}
+                        <li>
+                    {% endif %}
+                            <a href="{% url 'cases_app:list_case' %}">全部</a>
+                        </li>
+                    {% for category in category_cases %}
+                        {% if category.Category_pro_tit == case_type %}
+                            <li class="active">
+                        {% else %}
+                            <li>
+                        {% endif %}
+                                <a href="{% url 'cases_app:list_case' %}?pro={{ category.id }}">{{ category.Category_pro_tit }}</a>
+                            </li>
+                    {% endfor %}
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active">
+                        <ul>
+                            {% for post in posts %}
+                                <li>
+                                    <a href="{% url 'cases_app:detail_case' %}?id={{ post.id }}">
+                                        <img src="https://img.pdk365.com/media/{{ post.thumbnail }}" class="case_conent_size">
+                                        <div class="case_conent_details">
+                                            <div class="case_conent_details_title">
+                                                <a href="##">
+                                                    <h3>{{ post.title }}</h3>
+                                                </a>
+                                            </div>
+                                            <p class="clearfix">
+                                                <span class="pull-left">{{ post.adviser.username }}</span>
+                                                <img src="https://img.pdk365.com/media/{{ post.adviser.thumbnail }}" class="pull-right">
+                                            </p>
+                                        </div>
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <!--翻页开始-->
+                <nav aria-label="" class="pages_list_shop">
+                    {% include 'common/pagination.html' with url_for=url_for left_pages=left_pages right_pages=right_pages current_page=current_page left_has_more=left_has_more right_has_more=right_has_more num_pages=num_pages %}
+                </nav>
+            </div>
+            <!--右侧随机展示列表页-->
+            <div class="case_conent_right">
+                <!--顾问推荐，同服务类随机生成-->
+                <div class="adviser_conent_right_recommend">
+                    <div class="adviser_conent_right_recommend_title">
+                        <h3>金牌顾问推荐</h3>
+                        <a href="##" getadviserNum=0>换一批</a>
+                    </div>
+                    <ul>
+                        {% for recommend in consultant_recommend %}
+                            <li>
+                                <a href="{% url 'adviser_app:article_adviser' %}?id={{ recommend.id }}">
+                                    <img src="https://img.pdk365.com/media/{{ recommend.thumbnail }}" >
+                                    <div class="adviser_conent_right_recommend_score">
+                                        <h4>{{ recommend.username }}</h4>
+                                        <p>
+                                            <span>订单量：</span>
+                                            <span>{{ recommend.count_order }}</span>
+                                        </p>
+                                        <p>
+                                            <span>咨询量：</span>
+                                            <span>{{ recommend.count_con }}</span>
+                                        </p>
+                                    </div>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <!--本产品已完成的相关案例-->
+                <div class="adviser_conent_right_cases">
+                    <div class="adviser_conent_right_cases_title">
+                        <h3>优秀经典案例</h3>
+                        <a href="##" getcaseNum=0>换一批</a>
+                    </div>
+                    <ul>
+                        {% for recommend in cases_recommend %}
+                            <li>
+                                <a href="{% url 'cases_app:detail_case' %}?id={{ recommend.id }}">
+                                    <img src="https://img.pdk365.com/media/{{ recommend.thumbnail }}">
+                                    <div class="adviser_conent_right_cases_great">
+                                        <h4>{{ recommend.title }}</h4>
+                                        <p>{{ recommend.excerpt }}</p>
+                                    </div>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--列表内容结束-->
+{% endblock %}
+{% block js %}
+{% endblock %}

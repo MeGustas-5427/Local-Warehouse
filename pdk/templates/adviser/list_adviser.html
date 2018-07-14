@@ -1,0 +1,190 @@
+{% extends "base.html" %}article_adviser.html
+
+{% block head %}
+    <link type="text/css" rel="stylesheet" href="https://img.pdk365.com/static/lee/css/list_adviser.css">
+    <script src="https://img.pdk365.com/static/reception/js/list_adviser.js"></script>
+{% endblock %}
+{% block main %}
+<!--列表内容开始-->
+<div class="adviser_list_content">
+    <div class="container">
+        <!--列表栏目begin-->
+        {% if not search_result %}
+        <div class="menu-container">
+            <div class="menu menu1">
+                <!-- link值与下面部分的id相等 -->
+                <span>一级分类：</span>
+                <ul>
+                    <li>
+                        <a id="all-btn" href="{% url 'adviser_app:list_adviser' %}">全部</a>
+                    </li>
+                    {% for pro in category_pro %}
+                        <li>
+                            <a class="pro_{{ pro.id }}"  href="{% url 'adviser_app:list_adviser' %}?pro={{ pro.id }}" >{{ pro.Category_pro_tit }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="menu menu2">
+                <span>二级分类：</span>
+                <ul id="all" class="item-hide">
+                    {% for pro_son in category_pro_son  %}
+                        <li>
+                            <a class="pro_son_{{ pro_son.id }}" href="{% url 'adviser_app:list_adviser' %}?pro_son={{ pro_son.id }}">{{ pro_son.Category_pro_tit }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% for pro in category_pro %}
+                    <ul id="pro_{{ pro.id }}" class="item-hide">
+                        {% for pro_son in pro.pro_son %}
+                            <li>
+                                <a class="pro_son_{{ pro_son.id }}" href="{% url 'adviser_app:list_adviser' %}?pro_son={{ pro_son.id }}">{{ pro_son.Category_pro_tit }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endfor %}
+            </div>
+            <div class="menu menu3" style="display: none;">
+                <span>三级分类：</span>
+                {% for pro_son in category_pro_son %}
+                    <ul id='pro_son_{{ pro_son.id }}'>
+                        {% for pro_grandson in pro_son.pro_grandson %}
+                            <li>
+                                <a id="pro_grandson_{{ pro_grandson.id }}" href="{% url 'adviser_app:list_adviser' %}?pro_grandson={{ pro_grandson.id }}">{{ pro_grandson.Category_pro_tit }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        {% if search_result %}
+        <div class="search_result">
+            搜索：<strong>{{ search_result }}</strong>的结果如下
+        </div>    
+        {% endif %}
+        <!--列表产品begin-->
+
+        <!--当点击电话咨询，触发弹窗，需要录入电话号码、获取验证码、短信通知到当前顾问-->
+
+        <div class="adviser">
+            <div class="item">
+                <ul>
+                    {% for post in posts %}
+                        <li consultant_id="{{ post.id }}">
+                            <a href="{% url 'adviser_app:article_adviser' %}'?id={{ post.id }}">
+                                <img src="https://img.pdk365.com/media/{{ post.thumbnail }}" alt="">
+                                <div class="adviser_information adviser_name">
+                                    <h3>{{ post.username }}</h3>
+                                    <p class="adviser_company">{{ post.profession }}</p>
+                                    <p class="adviser_suit">{{ post.serve }}</p>
+                                </div>
+                                <div class="adviser_information adviser_evaluate">
+                                    <p class="star">
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                    </p>
+                                    <p class="turnover">
+                                        <span>成交量：</span>
+                                        <span>{{ post.count_order }}</span>
+                                        &nbsp;&nbsp;|&nbsp;&nbsp;
+                                        <span>咨询量：</span>
+                                        <span>{{ post.count_con }}</span>
+                                    </p>
+                                </div>
+                            </a>
+                            <div class="adviser_information adviser_connect">
+                                <p class="adviser_in"><i class="fa fa-commenting"></i>在线咨询</p>
+                                <p consultant="{{ post.username }}" class="adviser_tel" data-toggle="modal" data-target="#connectModal"><i class="fa fa-phone"></i>电话咨询</p>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <!--翻页开始-->
+            <nav aria-label="" class="pages_list_shop">
+                {% include 'common/pagination.html' with url_for=url_for left_pages=left_pages right_pages=right_pages current_page=current_page left_has_more=left_has_more right_has_more=right_has_more num_pages=num_pages %}
+            </nav>
+        </div>
+    </div>
+</div>
+<!--列表内容结束-->
+<!--电话联系模态框-->
+<div class="modal fade" id="connectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">免费电话咨询</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <input type="text" placeholder="请输入您的姓名" name="advisory_contacts">
+                </p>
+                <p>
+                    <input type="text" placeholder="请输入您的手机号码" name="advisory_telephone">
+                </p>
+                <p>
+                    <input type="text" placeholder="请输入您的验证码" name="advisory_sms_captcha">
+                    <button class="btn" id="sms-captcha-consult">发送验证码</button>
+                </p>
+                <button class="btn consult" id="advisory-btn" data-dismiss="modal">免费咨询</button>
+            </div>
+        </div>
+    </div>
+</div id="AAAA">
+{% endblock %}
+{% block js %}
+    <script>
+    // 一级分类二级分类三级分类的切换
+        $(function(){
+
+            $('.menu3 ul').css('display','none');
+
+            var pro = $('.{{ pro }}');
+            {% if pro_son %}
+            var pro_son = $('.{{ pro_son }}');
+            {% else %}
+            var pro_son = $('.AAAA');
+            {% endif %}
+
+            {% if pro_grandson %}
+            var pro_grandson = $('#{{ pro_grandson }}');
+            {% else %}
+            var pro_grandson = $('#AAAA');
+            {% endif %}
+
+            var is_pro = {{ is_pro }};
+            var is_pro_son = {{ is_pro_son}};
+            var is_pro_grandson = {{ is_pro_grandson}};
+
+            $('#'+pro.attr('class')).removeClass('item-hide').addClass('item-show');
+            pro.addClass('active');
+
+            if(is_pro == 1){
+                $('.menu2 ul:eq(0)').removeClass('item-hide').addClass('item-show');
+                $('#all-btn').addClass('active');
+                console.log($('#all-btn'))
+            }
+            if(is_pro_son == 1 && is_pro_grandson == 0){
+                pro_son.addClass('active');
+            }
+            if(is_pro_son == 1 && is_pro_grandson == 2){
+
+                $('#'+pro_son.attr('class')).css('display','inline-block');
+                $('.menu3').css('display','block');
+                pro_son.addClass('active');
+            }
+            if(is_pro_son == 1 && is_pro_grandson == 1){
+
+                $('#'+pro_son.attr('class')).css('display','inline-block');
+                $('.menu3').css('display','block');
+                pro_son.addClass('active');
+                pro_grandson.addClass('active');
+            }
+        });
+    </script>
+{% endblock %}

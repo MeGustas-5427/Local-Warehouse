@@ -1,0 +1,100 @@
+{% macro static(filename) -%}
+    {{ url_for("static", filename=filename) }}
+{% endmacro %}
+
+
+{# 显示服务类型 #}
+{% macro tablist(service_type_dict) -%}
+    {% for service_type in service_type_dict.keys() %}
+        <li role="presentation">
+            <a href={{ "#"+service_type }} aria-controls={{ service_type }} role="tab" data-toggle="tab">{{ service_type }}</a>
+        </li>
+    {% endfor %}
+{% endmacro %}
+
+
+{# 显示该服务类型下的服务名称 #}
+{% macro tab_content(service_type, service_list, consultant) -%}
+    <div role="tabpanel" class="tab-pane" id={{ service_type }}>
+        <ul>
+            {% for service in service_list %}
+                <li>
+                    <a href="{{ url_for('reception.detail_product') }}?service={{ service }}&consultant={{ consultant }}">
+                        <span>{{ service }}</span>
+                    </a>
+                    <span class="pull-right">
+                        <a href="#" class="service-btn adviser_tel1" data-toggle="modal"
+                           data-target="#connectModal" service="{{ service }}">
+                            <i class="fa fa-phone"></i>电话咨询
+                        </a>
+                        <span class="adviser_in1" data-toggle="modal" data-target="#connectModal">
+                            <i class="fa fa-twitch"></i>在线咨询
+                        </span>
+                    </span>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endmacro %}
+
+
+{% macro case_tab_list(service_type_dict) -%}
+    {% for service_type, class in service_type_dict.items() %}
+        <li class="{{ class }}">
+            <a href={{ "#"+ service_type }} data-toggle="tab">{{ service_type }}</a>
+        </li>
+    {% endfor %}
+{% endmacro %}
+
+
+{% macro case_tab_content(id, class, posts) -%}
+    <div class="{{ class }}" id={{ id }}>
+        <ul>
+            {% for post in posts %}
+                <li>
+                    <a href="{{ url_for("reception.detail_case") }}?id={{ post.id }}">
+                        <img src="{{ post.image_url or static("lee/img/55ee467369b80.jpg") }}" class="case_conent_size">
+                        <div class="case_conent_details">
+                            <h3>{{ post.title }}</h3>
+                            <p>来源顾问：
+                                <span>{{ post.consultant }}</span>
+                                <img src="http://rms.zbj.com/resource/redirect?key=homesite/task/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20171213185922.jpg/origine/4618adde-375e-4ce0-98e5-3268388aa130">
+                            </p>
+                        </div>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endmacro %}
+
+{% macro service(service_dict) %}
+    {% for service_division, type_dict in service_dict.items() %}
+        {% if service_division != "其他" %}
+            <li><a href="#">{{ service_division }}</a>
+                <ul>
+                    {% for service_type, type_ORMs in type_dict.items() %}
+                        <li><a href="">{{ service_type }}</a>
+                            <ul>
+                                {% for ORM in type_ORMs %}
+                                    <li><a href="">{{ ORM.title }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% else %}
+            {% for service_type, type_ORMs in type_dict.items() %}
+                <li>
+                    <a href="">{{ service_type }}</a>
+                    <ul>
+                        {% for ORM in type_ORMs %}
+                            <li><a href="{{ url_for('reception.detail_product') }}?id={{ ORM.id }}">{{ ORM.title }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}

@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% block head %}
+<link type="text/css" rel="stylesheet" href="https://img.pdk365.com/static/lee/css/list_product.css">
+<script src="https://img.pdk365.com/static/reception/js/list_product.js"></script>
+{% endblock %} {% block main %}
+<!--列表内容开始-->
+<div class="product_list_content">
+    <div class="container">
+        {% if not search_result %}
+            <div class="menu-container">
+                <div class="menu menu1">
+                    <!-- link值与下面部分的id相等 -->
+                    <span>一级分类：</span>
+                    <ul>
+                        <li>
+                            <a id="all-btn" href="{% url 'product_app:list_product' %}">全部</a>
+                        </li>
+                        {% for pro in category_pro %}
+                        <li>
+                            <a class="pro_{{ pro.id }}" href="{% url 'product_app:list_product' %}?pro={{ pro.id }}">{{ pro.Category_pro_tit }}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="menu menu2">
+                    <span>二级分类：</span>
+                    <ul id="all" class="item-hide">
+                        {% for pro_son in category_pro_son %}
+                        <li>
+                            <a class="pro_son_{{ pro_son.id }}" href="{% url 'product_app:list_product' %}?pro_son={{ pro_son.id }}">{{ pro_son.Category_pro_tit }}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% for pro in category_pro %}
+                    <ul id="pro_{{ pro.id }}" class="item-hide">
+                        {% for pro_son in pro.pro_son %}
+                        <li>
+                            <a class="pro_son_{{ pro_son.id }}" href="{% url 'product_app:list_product' %}?pro_son={{ pro_son.id }}">{{ pro_son.Category_pro_tit }}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endfor %}
+                </div>
+                <div class="menu menu3" style="display: none;">
+                    <span>三级分类：</span> {% for pro_son in category_pro_son %}
+                    <ul id='pro_son_{{ pro_son.id }}'>
+                        {% for pro_grandson in pro_son.pro_grandson %}
+                        <li>
+                            <a id="pro_grandson_{{ pro_grandson.id }}" href="{% url 'product_app:list_product' %}?pro_grandson={{ pro_grandson.id }}">{{ pro_grandson.Category_pro_tit }}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        {% if search_result %}
+        <div class="search_result">
+             搜索：<strong>{{ search_result }}</strong>的结果如下
+        </div>
+        {% endif %}
+
+        {% if banner %}
+            <a href="{{ banner.0.url }}">
+                <img src="https://img.pdk365.com/media/{{ banner.0.thumbnail }}" alt="" class="product_image">
+            </a>
+        {% endif %}
+        <div class="product_conent">
+            <div class="product_conent_left">
+                <div class="tab-content">
+                    <div class="tab-pane active">
+                        <ul>
+                            {% for post in posts %}
+                            <li product_id="{{ post.id }}">
+                                <a href="{% url 'product_app:detail_product' %}?id={{ post.id }}">
+                                    <img src="https://img.pdk365.com/media/{{ post.thumbnail }}" class="product_conent_size">
+                                </a>
+                                <div class="product_conent_details">
+                                    <a href="{% url 'product_app:detail_product' %}?id={{ post.id }}">
+                                        <p>
+                                            <span><i class="fa fa-rmb"></i>{{ post.price }}.00</span>
+                                            <span>成交量:</span>
+                                            <span>{{ post.count }}</span>
+                                        </p>
+                                        <h3>
+                                            {{ post.title }}
+                                        </h3>
+                                        <div class="tell_info">
+                                            <span>跑得快企服超市</span>
+                                        </div>
+                                    </a>
+                                    <div class="zixun">
+                                        立即咨询
+                                    </div>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!--翻页开始-->
+            <nav aria-label="" class="pages_list_shop">
+                {% include 'common/pagination.html' with url_for=url_for left_pages=left_pages right_pages=right_pages current_page=current_page left_has_more=left_has_more right_has_more=right_has_more num_pages=num_pages %}
+            </nav>
+            <!-- 推荐内容 -->
+            {% if not search_result %}
+                <div class="product_recommend">
+                <div class="recommend_title">
+                    <h3>热门推荐</h3>
+                </div>
+                <ul class="recommend_list">
+                    {% for recommend in recommends %}
+                    <li>
+                        <a href="{% url 'product_app:detail_product' %}?id={{ recommend.id }}">
+                                <img src="https://img.pdk365.com/media/{{ recommend.thumbnail }}" class="product_conent_size">
+                            </a>
+                        <div class="product_conent_details">
+                            <a href="{% url 'product_app:detail_product' %}?id={{ recommend.id }}">
+                                <p>
+                                    <span><i class="fa fa-rmb"></i>{{ recommend.price }}.00</span>
+                                    <span>成交量:</span>
+                                    <span>{{ recommend.count }}</span>
+                                </p>
+                                <h3>
+                                    {{ recommend.title }}
+                                </h3>
+                                <div class="tell_info">
+                                    <span>跑得快企服超市</span>
+                                </div>
+                            </a>
+                            <div class="zixun">
+                                立即咨询
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div id="AAAA">
+<!--列表内容结束-->
+{% endblock %} {% block js %}
+<script>
+// 一级分类二级分类三级分类的切换
+$(function() {
+
+    $('.menu3 ul').css('display', 'none');
+
+    var pro = $('.{{ pro }}');
+    var pro_son = $('.{{ pro_son }}');
+    var pro_grandson = $('#{{ pro_grandson }}');
+    var is_pro = {{ is_pro }};
+    var is_pro_son = {{ is_pro_son }};
+    var is_pro_grandson = {{ is_pro_grandson }};
+
+    $('#' + pro.attr('class')).removeClass('item-hide').addClass('item-show');
+    pro.addClass('active');
+
+    if (is_pro == 1) {
+        $('.menu2 ul:eq(0)').removeClass('item-hide').addClass('item-show');
+        $('#all-btn').addClass('active');
+    }
+    if (is_pro_son == 1 && is_pro_grandson == 0) {
+        pro_son.addClass('active');
+    }
+    if (is_pro_son == 1 && is_pro_grandson == 2) {
+
+        $('#' + pro_son.attr('class')).css('display', 'inline-block');
+        $('.menu3').css('display', 'block');
+        pro_son.addClass('active');
+    }
+    if (is_pro_son == 1 && is_pro_grandson == 1) {
+
+        $('#' + pro_son.attr('class')).css('display', 'inline-block');
+        $('.menu3').css('display', 'block');
+        pro_son.addClass('active');
+        pro_grandson.addClass('active');
+    }
+});
+</script>
+{% endblock %}

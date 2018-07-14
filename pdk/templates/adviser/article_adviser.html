@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <link type="text/css" rel="stylesheet" href="https://img.pdk365.com/static/lee/css/article_adviser.css">
+    <script src="https://img.pdk365.com/static/reception/js/article_adviser.js"></script>
+{% endblock %}
+{% block main %}
+<!--详细内容开;始-->
+<div class="container-fluid">
+    <div class="container">
+        <!--路径导航-->
+        <ul class="breadcrumb_new">
+            <li><a href="/">首页</a><i class="fa fa-angle-right"></i></li>
+            <li><a href="{{ url_for( 'reception.list_adviser') }}">顾问</a><i class="fa fa-angle-right"></i></li>
+            <li class="active">{{ consultant.name }}</li>
+        </ul>
+        <!--个人简述-->
+        <div class="adviser_about" consultant_id="{{ consultant.id }}">
+            <div class="col-md-8">
+                <img src="https://img.pdk365.com/media/{{ consultant.thumbnail }}" alt="企优托顾问___" class="pull-left">
+                <div class="pull-left adviser_about_left">
+                    <h1 id="consultant">{{ consultant.username }}</h1>
+                    <p class="adviser_about_say">简述：{{ consultant.excerpt }}</p>
+                    <p class="adviser_about_left_data">
+                        <span>订单量&nbsp;:&nbsp;</span>
+                        <span>{{ orders }}</span>
+                        <span>咨询量&nbsp;:&nbsp;</span>
+                        <span>{{ advisory }}</span>
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4 adviser_about_right">
+                <h3>快速联系</h3>
+                <span>一对一专属服务，解决您所有疑问</span>
+                <p class="adviser_in"><i class="fa fa-commenting"></i>在线咨询</p>
+                <p class="adviser_tel"  data-toggle="modal" data-target="#connectModal"><i class="fa fa-phone"></i>电话咨询</p>
+
+            </div>
+        </div>
+
+        <!--详细内容-->
+        <div class="adviser_conent">
+            <!--左侧详细内容-->
+            <div class="adviser_conent_left">
+                <div class="adviser_conent_left_title">
+                    <h3>顾问服务</h3>
+                    <h3>个人介绍</h3>
+                    <h3 class="order_introduce">案例介绍</h3>
+                    <h3 class="order_complete">成单记录</h3>
+                    <h3 class="order_advisory">询单记录</h3>
+                    <h3 class="order_evaluate">客户评价</h3>
+                </div>
+                <div class="adviser_conent_left_details">
+                    <!--顾问服务-->
+                    <div class="adviser_conent_service_table">
+                        <ul class="nav" role="tablist">
+                            <li>服务类型：</li>
+                            <li role="presentation" class="active">
+                                <a href="#home" aria-controls="home" role="tab" data-toggle="tab">全部</a>
+                            </li>
+                            {% for service_type in service_type_dict.keys() %}
+                                <li role="presentation">
+                                    <a href="#{{ service_type }}" aria-controls="profile" role="tab" data-toggle="tab">{{ service_type }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <!-- TAB内容开始 -->
+                        <div class="tab-content_tit">服务名称</div>
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane active" id="home">
+                                <ul>
+                                    {% for service in service_all %}
+                                        <li>
+                                            <a href="{{ url_for('reception.detail_product', id=service.id) }}">
+                                                <span>{{ service.title }}</span>
+                                            </a>
+                                            <span class="pull-right">
+                                                <span class="adviser_in1">
+                                                    <i class="fa fa-commenting"></i>在线咨询
+                                                </span>
+                                                <span class="adviser_tel1"  data-toggle="modal" data-target="#connectModal">
+                                                    <i class="fa fa-phone"></i>电话咨询
+                                                </span>
+                                            </span>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% for service_type, service_list in service_type_dict.items() %}
+                                <div role="tabpanel" class="tab-pane" id={{ service_type }}>
+                                    <ul>
+                                        {% for service in service_list %}
+                                            <li>
+                                                <a href="{{ url_for('reception.detail_product', id=service.id) }}">
+                                                    <span>{{ service.title }}</span>
+                                                </a>
+                                                <span class="pull-right">
+                                                    <span class="adviser_in1">
+                                                        <i class="fa fa-commenting"></i>在线咨询
+                                                    </span>
+                                                    <span class="adviser_tel1"  data-toggle="modal" data-target="#connectModal">
+                                                        <i class="fa fa-phone"></i>电话咨询
+                                                    </span>
+                                                </span>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <!--顾问个人介绍-->
+                    <div class="adviser_introduce_table">
+                        <p>
+                            {{ (consultant.body or "")|safe }}
+                        </p>
+                    </div>
+                    <!--顾问案例-->
+                    <div class="case_introduce_table">
+                        <ul class="adviser_border">
+                            {% for case in consultant_cases %}
+                                <li>
+                                    <a href="{{ url_for('reception.detail_case') }}?id={{ case.id }}">
+                                        <img src="https://img.pdk365.com/media/{{ case.thumbnail }}" class="pull-left">
+                                        <div class="adviser_conent_case_right pull-left">
+                                            <h4>{{ case.title }}</h4>
+                                            <p>{{ case.excerpt|safe }}</p>
+                                        </div>
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <nav aria-label="" class="pages_list_shop">
+                            <ul class="pagination case_page">
+                                <li><a href="##" aria-label="Previous"><span aria-hidden="true">上一页</span></a></li>
+                                
+                                <li><a href="##" aria-label="Next"><span aria-hidden="true">下一页</span></a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <!--顾问订单-->
+                    <div class="adviser_conent_order_complete">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="adviser_th1">服务名称</th>
+                                    <th>客户名称</th>
+                                    <th>客户电话</th>
+                                    <th>咨询时间</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                            </tbody>
+                        </table>
+                        <nav aria-label="" class="pages_list_shop">
+                            <ul class="pagination complete_page">
+                                <li><a href="##" aria-label="Previous"><span aria-hidden="true">上一页</span></a></li>
+
+                                <li><a href="##" aria-label="Next"><span aria-hidden="true">下一页</span></a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <!-- 顾问询单 -->
+                    <div class="adviser_conent_order_advisory">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="adviser_th1">服务名称</th>
+                                    <th>客户名称</th>
+                                    <th>客户电话</th>
+                                    <th>咨询时间</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                            </tbody>
+                        </table>
+                        <nav aria-label="" class="pages_list_shop">
+                            <ul class="pagination advisory_page">
+                                <li><a href="#" aria-label="Previous"><span aria-hidden="true">上一页</span></a></li>
+                                
+                                <li><a href="#" aria-label="Next"><span aria-hidden="true">下一页</span></a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <!--客户评价-->
+                    <div class="adviser_conent_evaluate_details">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="adviser_conent_evaluate_th1">客户评价</th>
+                                    <th>满意度</th>
+                                    <th>评价时间</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <!-- ajax请求数据 -->
+                            </tbody>
+                        </table>
+                        <nav aria-label="" class="pages_list_shop">
+                            <ul class="pagination evaluate_page">
+                                <li><a href="##" aria-label="Previous"><span aria-hidden="true">上一页</span></a></li>
+                                <!-- ajax请求数据 -->
+                                <li><a href="##" aria-label="Next"><span aria-hidden="true">下一页</span></a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+                
+            </div>
+            <!--右侧推荐内容-->
+            <div class="adviser_conent_right">
+                <!--顾问推荐，同服务类随机生成-->
+                <div class="adviser_conent_right_recommend">
+                    <div class="adviser_conent_right_recommend_title">
+                        <h3>金牌顾问推荐</h3>
+                        <a href="##" getadviserNum=0>换一批</a>
+                    </div>
+                    <ul>
+                        {% for consultant in recommend %}
+                            <li>
+                                <a href="{{ url_for('reception.article_adviser') }}?id={{ consultant.id }}">
+                                    <img src="https://img.pdk365.com/media/{{ consultant.thumbnail }}" >
+                                    <div class="adviser_conent_right_recommend_score">
+                                        <h4>{{ consultant.username }}</h4>
+                                        <p>
+                                            <span>订单量：</span>
+                                            <span>{{ consultant.count_order }}</span>
+                                        </p>
+                                        <p>
+                                            <span>咨询量：</span>
+                                            <span>{{ consultant.count_con }}</span>
+                                        </p>
+                                    </div>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <!--本产品已完成的相关案例-->
+                <div class="adviser_conent_right_cases">
+                    <div class="adviser_conent_right_cases_title">
+                        <h3>优秀经典案例</h3>
+                        <a href="##" getcaseNum=0>换一批</a>
+                    </div>
+                    <ul>
+                        {% for case in cases %}
+                            <li>
+                                <a href="{{ url_for('reception.detail_case') }}?id={{ case.id }}">
+                                    <img src="https://img.pdk365.com/media/{{ case.thumbnail }}">
+                                    <div class="adviser_conent_right_cases_great">
+                                        <h4>{{ case.title }}</h4>
+                                        <p>{{ case.excerpt |truncate(length=35) }}</p>
+                                    </div>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--电话联系模态框-->
+<div class="modal fade" id="connectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">免费电话咨询</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <input type="text" placeholder="请输入您的姓名" name="advisory_contacts">
+                </p>
+                <p>
+                    <input type="text" placeholder="请输入您的手机号码" name="advisory_telephone">
+                </p>
+                <p>
+                    <input type="text" placeholder="请输入您的验证码" name="advisory_sms_captcha">
+                    <button class="btn" id="sms-captcha-consult">发送验证码</button>
+                </p>
+                <button class="btn consult" id="advisory-btn" data-dismiss="modal">免费咨询</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--详细内容结束-->
+{% endblock %}
+{% block js %}
+
+{% endblock %}
