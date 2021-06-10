@@ -2,7 +2,7 @@ cached==1.0.4
 certifi==2018.4.16
 chardet==3.0.4
 decorator==4.3.0
-Django==2.0
+Django==2.2.24
 django-ckeditor==5.5.0
 django-js-asset==1.1.0
 django-qiniu-storage==2.3.1
